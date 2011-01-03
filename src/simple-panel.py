@@ -111,6 +111,14 @@ class Panel(cream.Module):
         self.window.connect('expose-event', self.expose_cb)
         self.window.connect('button-release-event', self.click_cb)
 
+        self.item_add = gtk.ImageMenuItem(gtk.STOCK_ADD)
+        self.item_add.get_children()[0].set_label('Add applet')
+        self.item_add.connect('activate', self.add_applet)
+
+        self.menu = gtk.Menu()
+        self.menu.append(self.item_add)
+        self.menu.show_all()
+
         gobject.timeout_add(200, self.handle_fullscreen_windows)
 
         self.load_applets()
@@ -153,6 +161,10 @@ class Panel(cream.Module):
             return applet
         else:
             return None
+
+
+    def add_applet(self):
+        pass
 
 
     def relayout(self):
