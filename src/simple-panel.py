@@ -10,12 +10,14 @@ import json
 
 import tempfile
 import time
+from operator import itemgetter
 
 import cream
 import cream.manifest
 import cream.gui
 
 import simplepanel.applet
+from simplepanel.dialog import AddAppletDialog
 
 FADE_DURATION = 500
 MOUSE_BUTTON_RIGHT = 3
@@ -114,11 +116,15 @@ class Panel(cream.Module):
 
         self.item_add = gtk.ImageMenuItem(gtk.STOCK_ADD)
         self.item_add.get_children()[0].set_label('Add applet')
-        self.item_add.connect('activate', self.add_applet)
+        self.item_add.connect('activate', lambda *x: self.add_applet())
 
         self.menu = gtk.Menu()
         self.menu.append(self.item_add)
         self.menu.show_all()
+
+        applets = sorted(self.applets.by_id.itervalues(),key=itemgetter('name'))
+        self.add_dialog = AddAppletDialog(applets)
+
 
         gobject.timeout_add(200, self.handle_fullscreen_windows)
 
@@ -165,7 +171,12 @@ class Panel(cream.Module):
 
 
     def add_applet(self):
-        pass
+        self.add_dialog.dialog.show_all()
+
+        if self.add_dialog.dialog.run() == 1:
+            applet = self.add_dialog.selected_applet
+
+        self.add_dialog.dialog.hide()
 
 
     def relayout(self):
