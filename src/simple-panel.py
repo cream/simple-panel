@@ -129,7 +129,7 @@ class Panel(cream.Module):
 
                     applet.connect('render-request', self.render_request_cb)
                     applet.connect('allocation-changed', self.allocation_changed_cb)
-            
+
 
         self.relayout()
 
@@ -139,10 +139,11 @@ class Panel(cream.Module):
         path = self.applets.get_by_id(applet_id)['path']
 
         applet_file = os.path.join(path, '__init__.py')
+        applet_name = applet_id.split('.')[-1]
         if os.path.isfile(applet_file):
             sys.path.insert(0, path)
             imp.load_module(
-                'applet_{0}'.format(applet_id),
+                'applet_{0}'.format(applet_name),
                 open(applet_file),
                 applet_file,
                 ('.py', 'r', imp.PY_SOURCE)
@@ -160,7 +161,7 @@ class Panel(cream.Module):
 
         for group_n, group in enumerate(self.layout['layout']):
             orientation = group['orientation']
-            
+
             if orientation == 'right':
                 position = self.window.get_size()[0] - group['position']
                 objects = group['objects']
@@ -263,7 +264,7 @@ class Panel(cream.Module):
                     ctx.translate(x, y)
                     ctx.rectangle(0, 0, width, height)
                     ctx.clip()
-        
+
                     applet.render(ctx)
                     ctx.restore()
 
@@ -286,7 +287,7 @@ class Panel(cream.Module):
 
     def allocation_changed_cb(self, applet, allocation):
         self.relayout()
-        
+
 
 
 if __name__ == '__main__':
