@@ -48,17 +48,14 @@ class Indicator(object):
 
     def get_icon_path(self, size):
 
-        # TODO: Sometimes when indicator changes status the icon is not set properly
-        #if self.item.status == self.status and self.icon_path is not None:
-        #    self.status = self.item.status
-        #    return self.icon_path
-        #else:
-        #    self.status = self.item.status
-        #    self.icon_path = self.lookup_icon(size)
-        #    return self.icon_path
-        self.status = self.item.status
-        self.icon_path = self.lookup_icon(size)
-        return self.icon_path
+         # TODO: Sometimes when indicator changes status the icon is not set properly
+        if self.item.status == self.status and self.icon_path is not None:
+            self.status = self.item.status
+            return self.icon_path
+        else:
+            self.status = self.item.status
+            self.icon_path = self.lookup_icon(size)
+            return self.icon_path
 
 
 @simplepanel.applet.register
