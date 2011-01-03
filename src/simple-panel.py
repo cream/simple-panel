@@ -18,6 +18,7 @@ import cream.gui
 import simplepanel.applet
 
 FADE_DURATION = 500
+MOUSE_BUTTON_RIGHT = 3
 
 class PanelWindow(gtk.Window):
 
@@ -217,12 +218,12 @@ class Panel(cream.Module):
 
     def click_cb(self, window, event):
         applet = self.get_applet_at_coords(event.x, event.y)
-        if applet is None:
-            return
-
-        x = event.x - applet.get_position()[0]
-        y = event.y - applet.get_position()[1]
-        applet.emit('click', x, y)
+        if applet is not None:
+            x = event.x - applet.get_position()[0]
+            y = event.y - applet.get_position()[1]
+            applet.emit('click', x, y)
+        elif event.button == MOUSE_BUTTON_RIGHT:
+            self.menu.popup(None, None, None, event.button, event.get_time())
 
 
     def handle_fullscreen_windows(self):
