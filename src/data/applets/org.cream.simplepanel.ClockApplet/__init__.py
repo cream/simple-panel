@@ -18,7 +18,13 @@ class ClockApplet(simplepanel.applet.Applet):
 
         self.draw()
 
-        gobject.timeout_add(1000, self.draw)
+        gobject.timeout_add(1000, self.update)
+        
+        
+    def update(self):
+    
+        self.draw()
+        return True
 
 
     def render(self, ctx):
