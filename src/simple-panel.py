@@ -22,6 +22,31 @@ from simplepanel.dialog import AddAppletDialog
 FADE_DURATION = 500
 MOUSE_BUTTON_RIGHT = 3
 
+def copy_layout(layout):
+    l = []
+
+    for group in layout:
+        g = {}
+        g['orientation'] = group['orientation']
+        g['position'] = group['position']
+        g['objects'] = []
+
+        for obj in group['objects']:
+            o = {}
+            o['type'] = obj['type']
+
+            if obj['type'] == 'applet':
+                o['id'] = obj['id']
+            else:
+                o['size'] = obj['size']
+           
+            g['objects'].append(o)
+
+        l.append(g)
+
+    return l
+
+
 class PanelWindow(gtk.Window):
 
     def __init__(self):
@@ -103,7 +128,8 @@ class Panel(cream.Module):
 
         applets_dir = os.path.join(self.context.get_path(), 'data/applets')
         self.applets = cream.manifest.ManifestDB(applets_dir, 'org.cream.simplepanel.Applet')
-        self.layout = json.load(open('applets.json'))
+        self.layout = copy_layout(self.config.layout)
+        #self.layout = json.load(open('applets.json'))
 
         self.screen = wnck.screen_get_default()
         self.screen.connect('viewports-changed', self.viewports_changed_cb)
@@ -129,22 +155,28 @@ class Panel(cream.Module):
         gobject.timeout_add(200, self.handle_fullscreen_windows)
 
         self.load_applets()
+        
+        self.save_layout()
+        
+        
+    def save_layout(self):
+
+        self.config.layout = copy_layout(self.layout)
 
 
     def load_applets(self):
 
-        for group_n, group in enumerate(self.layout['layout']):
+        for group_n, group in enumerate(self.layout):
             for obj_n, obj in enumerate(group['objects']):
                 if obj['type'] == 'applet':
                     applet_class = self.load_applet(obj['id'])
                     applet = applet_class()
-                    self.layout['layout'][group_n]['objects'][obj_n]['instance'] = applet
+                    self.layout[group_n]['objects'][obj_n]['instance'] = applet
 
                     applet.allocate(24)
 
                     applet.connect('render-request', self.render_request_cb)
                     applet.connect('allocation-changed', self.allocation_changed_cb)
-
 
         self.relayout()
 
@@ -183,7 +215,7 @@ class Panel(cream.Module):
 
         position = 0
 
-        for group_n, group in enumerate(self.layout['layout']):
+        for group_n, group in enumerate(self.layout):
             orientation = group['orientation']
 
             if orientation == 'right':
@@ -198,22 +230,24 @@ class Panel(cream.Module):
                     applet = obj['instance']
                     if orientation == 'right':
                         position -= applet.get_allocation()[0]
+                        applet.set_position(position, 0)
                     elif orientation == 'left':
+                        applet.set_position(position, 0)
                         position += applet.get_allocation()[0]
-
-                    applet.set_position(position, 0)
                 elif obj['type'] == 'space':
                     if orientation == 'right':
                         position -= obj['size']
                     elif orientation == 'left':
                         position += obj['size']
+            if orientation == 'right':
+                objects.reverse()
 
         self.window.window.invalidate_rect(gtk.gdk.Rectangle(0, 0, self.window.get_size()[0],self.window.get_size()[1]), True)
 
 
     def get_applet_at_coords(self, x, y):
 
-        for group_n, group in enumerate(self.layout['layout']):
+        for group_n, group in enumerate(self.layout):
             orientation = group['orientation']
             position = group['position']
             for obj_n, obj in enumerate(group['objects']):
@@ -275,7 +309,7 @@ class Panel(cream.Module):
 
         ctx = self.window.window.cairo_create()
 
-        for group_n, group in enumerate(self.layout['layout']):
+        for group_n, group in enumerate(self.layout):
             orientation = group['orientation']
             position = group['position']
             for obj_n, obj in enumerate(group['objects']):

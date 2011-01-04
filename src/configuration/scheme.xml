@@ -1,9 +1,30 @@
 <configuration>
-    <widgets type="list" static="true" hidden="true">
+    <layout type="list" static="true" hidden="true">
         <item type="dict">
-            <y type="int">20</y>
-            <x type="int">0</x>
-            <name type="str">Control Area</name>
+            <position type="int">0</position>
+            <objects type="list">
+                <item type="dict">
+                    <type type="str">applet</type>
+                    <id type="str">org.cream.simplepanel.ApplicationIndicatorApplet</id>
+                </item>
+                <item type="dict">
+                    <type type="str">space</type>
+                    <size type="int">0</size>
+                </item>
+                <item type="dict">
+                    <type type="str">applet</type>
+                    <id type="str">org.cream.simplepanel.ScreensaverApplet</id>
+                </item>
+                <item type="dict">
+                    <type type="str">space</type>
+                    <size type="int">0</size>
+                </item>
+                <item type="dict">
+                    <type type="str">applet</type>
+                    <id type="str">org.cream.simplepanel.ClockApplet</id>
+                </item>
+            </objects>
+            <orientation type="str">right</orientation>
         </item>
-    </widgets>
+    </layout>
 </configuration>
