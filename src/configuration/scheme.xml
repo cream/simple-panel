@@ -26,5 +26,16 @@
             </objects>
             <orientation type="str">right</orientation>
         </item>
+
+        <item type="dict">
+            <position type="int">05</position>
+            <orientation type="str">left</orientation>
+            <objects type="list">
+                <item type="dict">
+                    <type type="str">applet</type>
+                    <id type="str">org.cream.simplepanel.WindowListApplet</id>
+                </item>
+            </objects>
+        </item>
     </layout>
 </configuration>
