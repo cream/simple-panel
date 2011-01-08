@@ -89,21 +89,19 @@ class Windows(gobject.GObject):
         return False
 
     def toggle_window(self, window):
-        #self.pywmctrl.activate(window._window)
-        #with self.conn.bunch():
-            #self.pywmctrl._send_clientmessage(
-                #window._window,
-                #'_NET_ACTIVE_WINDOW',
-                #32,
-                #[1, window._window.get_internal(), 0]
-            #)
-        # TODO
-        print self.pywmctrl._send_clientmessage(
-            window._window,
-            '_NET_WM_STATE',
-            32,
-            [2, 0, 0, 1]
-        )
+        with self.conn.bunch():
+            self.pywmctrl._send_clientmessage(
+                window._window,
+                '_NET_ACTIVE_WINDOW',
+                32,
+                [1, window._window.get_internal(), 0]
+            )
+        #self.pywmctrl._send_clientmessage(
+            #window._window,
+            #'_NET_WM_STATE',
+            #32,
+            #[2, 0, 0, 1]
+        #)
 
     def _ooxcb_cb(self, source, cb_condition):
         while self.conn.alive:
