@@ -1,10 +1,27 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA 02110-1301, USA.
+
 import sys
 import os
 import imp
 import gobject
 import gtk
 import cairo
-import rsvg
 import wnck
 import json
 
@@ -15,6 +32,7 @@ from operator import itemgetter
 import cream
 import cream.manifest
 import cream.gui
+import cream.gui.svg
 
 import simplepanel.applet
 from simplepanel.dialog import AddAppletDialog
@@ -99,33 +117,55 @@ class PanelWindow(gtk.Window):
         ctx.set_source_rgba(0, 0, 0, 0)
         ctx.paint()
 
-        ctx.scale(1680 / 10, 1)
-
-        shadow_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
-        shadow_ctx = cairo.Context(shadow_surface)
-
-        shadow = rsvg.Handle('data/themes/default/shadow.svg')
-        shadow.render_cairo(shadow_ctx)
-
+        ctx.set_operator(cairo.OPERATOR_OVER)
+        
+        # Draw the background…
         background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
         background_ctx = cairo.Context(background_surface)
 
-        background = rsvg.Handle('data/themes/default/background.svg')
+        background = cream.gui.svg.Handle('data/themes/default/background.svg')
+        background.dom.getElementById('stretch').setAttribute('width', str(1440))
+        background.dom.getElementById('stretch').setAttribute('height', str(24))
+        background.save_dom()
         background.render_cairo(background_ctx)
 
-        ctx.set_source_surface(shadow_surface)
-        ctx.paint_with_alpha(self.get_alpha()[1])
+        # … and the shadow…
+        shadow_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        shadow_ctx = cairo.Context(shadow_surface)
+        shadow_ctx.translate(0, 23)
+        shadow = cream.gui.svg.Handle('data/themes/default/shadow.svg')
+        shadow.dom.getElementById('shadow').setAttribute('width', str(1440))
+        #shadow.dom.getElementById('border').setAttribute('width', str(1440))
+        shadow.save_dom()
+        shadow.render_cairo(shadow_ctx)
+
+        # … and the border.
+        border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        border_ctx = cairo.Context(border_surface)
+        border_ctx.translate(0, 23)
+        border = cream.gui.svg.Handle('data/themes/default/border.svg')
+        border.dom.getElementById('border').setAttribute('width', str(1440))
+        border.save_dom()
+        border.render_cairo(border_ctx)
 
         ctx.set_source_surface(background_surface)
         ctx.paint_with_alpha(self.get_alpha()[0])
 
+        ctx.set_source_surface(shadow_surface)
+        ctx.paint_with_alpha(self.get_alpha()[1])
+
+        ctx.set_source_surface(border_surface)
+        ctx.paint_with_alpha(100)
+
 
 class Panel(cream.Module):
+    """ Main class of the Panel module. """
 
     def __init__(self):
 
         cream.Module.__init__(self, 'org.cream.Panel')
 
+        # Load themes and applets...
         applets_dir = os.path.join(self.context.get_path(), 'data/applets')
         self.applets = cream.manifest.ManifestDB(applets_dir, 'org.cream.simplepanel.Applet')
         self.layout = copy_layout(self.config.layout)

@@ -1,3 +1,4 @@
+import re
 import gobject
 import gtk
 import cairo
@@ -9,6 +10,8 @@ FONT = ('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 FONT_SIZE = 14
 COLOR = (.1, .1, .1, 1)
 PADDING = 5
+
+PATH_RE = re.compile('(/.+)+')
 
 class Indicator(object):
 
@@ -36,6 +39,10 @@ class Indicator(object):
     def lookup_icon(self, size):
 
         icon_name = self.get_icon_name()
+        
+        if PATH_RE.match(icon_name):
+            return icon_name
+
         theme = gtk.icon_theme_get_default()
         if self.item.icon_theme_path:
             theme.append_search_path(self.item.icon_theme_path)
@@ -51,6 +58,7 @@ class Indicator(object):
          # TODO: Sometimes when indicator changes status the icon is not set properly
         if self.item.status == self.status and self.icon_path is not None:
             self.status = self.item.status
+            self.icon_path = self.lookup_icon(size)
             return self.icon_path
         else:
             self.status = self.item.status
@@ -124,8 +132,14 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
         for indicator in self.indicators:
             icon_path = indicator.get_icon_path(self.get_size())
+            
+            icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, self.get_size(), self.get_size())
 
-            icon_surface = cairo.ImageSurface.create_from_png(icon_path)
+            icon_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size(), self.get_size())
+            icon_context = gtk.gdk.CairoContext(cairo.Context(icon_surface))
+            icon_context.set_source_pixbuf(icon, 0, 0)
+            icon_context.paint()
+
             height = icon_surface.get_height()
             width = icon_surface.get_width()
 
@@ -140,10 +154,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
         width = PADDING
 
         for indicator in self.indicators:
-            icon_path = indicator.get_icon_path(self.get_size())
-
-            icon_surface = cairo.ImageSurface.create_from_png(icon_path)
-            width += icon_surface.get_width() + PADDING
+            width += self.get_size() + PADDING
 
         self.set_allocation(width, height)
 
