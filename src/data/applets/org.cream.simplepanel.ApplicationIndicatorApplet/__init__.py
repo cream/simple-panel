@@ -1,4 +1,4 @@
-import re
+#!/usr/bin/env python
 import gobject
 import gtk
 import cairo
@@ -11,7 +11,6 @@ FONT_SIZE = 14
 COLOR = (.1, .1, .1, 1)
 PADDING = 5
 
-PATH_RE = re.compile('(/.+)+')
 
 class Indicator(object):
 
@@ -21,15 +20,15 @@ class Indicator(object):
         self.applet = applet
 
         self.status = None
-        self.icon_path = None
+        self.icons = {}
 
         item.connect('icon-new', lambda *x: applet.emit('render-request'))
         item.connect('attention-icon-new', lambda *x: applet.emit('render-request'))
         item.connect('status-new', lambda *x: applet.emit('render-request'))
 
 
-    def get_icon_name(self):
-
+    @property
+    def icon_name(self):
         if self.item.status == Status.NeedsAttention:
             return self.item.attention_icon_name
         else:
@@ -38,32 +37,30 @@ class Indicator(object):
 
     def lookup_icon(self, size):
 
-        icon_name = self.get_icon_name()
-        
-        if PATH_RE.match(icon_name):
-            return icon_name
+        icon_name = self.icon_name
+        if icon_name in self.icons:
+            return self.icons[icon_name]
 
         theme = gtk.icon_theme_get_default()
         if self.item.icon_theme_path:
             theme.append_search_path(self.item.icon_theme_path)
-        icon_info = theme.lookup_icon(self.get_icon_name(), size, 0)
+
+        icon_info = theme.lookup_icon(icon_name, size, 0)
         if icon_info is None:
             raise ValueError('Icon wasn\'t found! %r' % self.icon_name)
 
-        return icon_info.get_filename()
+        self.icons[icon_name] = icon_info.get_filename()
+        return self.icons[icon_name]
 
 
     def get_icon_path(self, size):
 
-         # TODO: Sometimes when indicator changes status the icon is not set properly
-        if self.item.status == self.status and self.icon_path is not None:
-            self.status = self.item.status
-            self.icon_path = self.lookup_icon(size)
-            return self.icon_path
+        if self.item.status == self.status:
+            return self.lookup_icon(size)
         else:
             self.status = self.item.status
-            self.icon_path = self.lookup_icon(size)
-            return self.icon_path
+            return self.lookup_icon(size)
+
 
 
 @simplepanel.applet.register
@@ -132,7 +129,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
         for indicator in self.indicators:
             icon_path = indicator.get_icon_path(self.get_size())
-            
+
             icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, self.get_size(), self.get_size())
 
             icon_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size(), self.get_size())
