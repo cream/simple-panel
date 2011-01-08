@@ -57,7 +57,7 @@ def copy_layout(layout):
                 o['id'] = obj['id']
             else:
                 o['size'] = obj['size']
-           
+
             g['objects'].append(o)
 
         l.append(g)
@@ -92,13 +92,13 @@ class PanelWindow(gtk.Window):
 
         self.connect('expose-event', self.expose_cb)
         self.connect('realize', self.realize_cb)
-        
+
         # Draw the background…
         self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
         background_ctx = cairo.Context(self.background_surface)
 
         background = cream.gui.svg.Handle('data/themes/default/background.svg')
-        background.dom.getElementById('stretch').setAttribute('width', str(1440))
+        background.dom.getElementById('stretch').setAttribute('width', str(width))
         background.dom.getElementById('stretch').setAttribute('height', str(24))
         background.save_dom()
         background.render_cairo(background_ctx)
@@ -108,8 +108,7 @@ class PanelWindow(gtk.Window):
         shadow_ctx = cairo.Context(self.shadow_surface)
         shadow_ctx.translate(0, 23)
         shadow = cream.gui.svg.Handle('data/themes/default/shadow.svg')
-        shadow.dom.getElementById('shadow').setAttribute('width', str(1440))
-        #shadow.dom.getElementById('border').setAttribute('width', str(1440))
+        shadow.dom.getElementById('shadow').setAttribute('width', str(width))
         shadow.save_dom()
         shadow.render_cairo(shadow_ctx)
 
@@ -118,7 +117,7 @@ class PanelWindow(gtk.Window):
         border_ctx = cairo.Context(self.border_surface)
         border_ctx.translate(0, 23)
         border = cream.gui.svg.Handle('data/themes/default/border.svg')
-        border.dom.getElementById('border').setAttribute('width', str(1440))
+        border.dom.getElementById('border').setAttribute('width', str(width))
         border.save_dom()
         border.render_cairo(border_ctx)
 
@@ -195,10 +194,10 @@ class Panel(cream.Module):
         gobject.timeout_add(200, self.handle_fullscreen_windows)
 
         self.load_applets()
-        
+
         self.save_layout()
-        
-        
+
+
     def save_layout(self):
 
         self.config.layout = copy_layout(self.layout)
