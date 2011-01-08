@@ -92,6 +92,35 @@ class PanelWindow(gtk.Window):
 
         self.connect('expose-event', self.expose_cb)
         self.connect('realize', self.realize_cb)
+        
+        # Draw the background…
+        self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        background_ctx = cairo.Context(self.background_surface)
+
+        background = cream.gui.svg.Handle('data/themes/default/background.svg')
+        background.dom.getElementById('stretch').setAttribute('width', str(1440))
+        background.dom.getElementById('stretch').setAttribute('height', str(24))
+        background.save_dom()
+        background.render_cairo(background_ctx)
+
+        # … and the shadow…
+        self.shadow_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        shadow_ctx = cairo.Context(self.shadow_surface)
+        shadow_ctx.translate(0, 23)
+        shadow = cream.gui.svg.Handle('data/themes/default/shadow.svg')
+        shadow.dom.getElementById('shadow').setAttribute('width', str(1440))
+        #shadow.dom.getElementById('border').setAttribute('width', str(1440))
+        shadow.save_dom()
+        shadow.render_cairo(shadow_ctx)
+
+        # … and the border.
+        self.border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        border_ctx = cairo.Context(self.border_surface)
+        border_ctx.translate(0, 23)
+        border = cream.gui.svg.Handle('data/themes/default/border.svg')
+        border.dom.getElementById('border').setAttribute('width', str(1440))
+        border.save_dom()
+        border.render_cairo(border_ctx)
 
 
     def set_alpha(self, bg, sdw):
@@ -118,43 +147,14 @@ class PanelWindow(gtk.Window):
         ctx.paint()
 
         ctx.set_operator(cairo.OPERATOR_OVER)
-        
-        # Draw the background…
-        background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
-        background_ctx = cairo.Context(background_surface)
 
-        background = cream.gui.svg.Handle('data/themes/default/background.svg')
-        background.dom.getElementById('stretch').setAttribute('width', str(1440))
-        background.dom.getElementById('stretch').setAttribute('height', str(24))
-        background.save_dom()
-        background.render_cairo(background_ctx)
-
-        # … and the shadow…
-        shadow_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
-        shadow_ctx = cairo.Context(shadow_surface)
-        shadow_ctx.translate(0, 23)
-        shadow = cream.gui.svg.Handle('data/themes/default/shadow.svg')
-        shadow.dom.getElementById('shadow').setAttribute('width', str(1440))
-        #shadow.dom.getElementById('border').setAttribute('width', str(1440))
-        shadow.save_dom()
-        shadow.render_cairo(shadow_ctx)
-
-        # … and the border.
-        border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
-        border_ctx = cairo.Context(border_surface)
-        border_ctx.translate(0, 23)
-        border = cream.gui.svg.Handle('data/themes/default/border.svg')
-        border.dom.getElementById('border').setAttribute('width', str(1440))
-        border.save_dom()
-        border.render_cairo(border_ctx)
-
-        ctx.set_source_surface(background_surface)
+        ctx.set_source_surface(self.background_surface)
         ctx.paint_with_alpha(self.get_alpha()[0])
 
-        ctx.set_source_surface(shadow_surface)
+        ctx.set_source_surface(self.shadow_surface)
         ctx.paint_with_alpha(self.get_alpha()[1])
 
-        ctx.set_source_surface(border_surface)
+        ctx.set_source_surface(self.border_surface)
         ctx.paint_with_alpha(100)
 
 
