@@ -11,7 +11,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="10"
-   height="36"
+   height="10"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.0 r9654"
@@ -21,7 +21,7 @@
     <linearGradient
        id="linearGradient3931">
       <stop
-         style="stop-color:#000000;stop-opacity:1;"
+         style="stop-color:#000000;stop-opacity:0.47598255;"
          offset="0"
          id="stop3933" />
       <stop
@@ -65,11 +65,11 @@
        xlink:href="#linearGradient3931"
        id="linearGradient4016"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(90.406251,213.99108)"
+       gradientTransform="translate(90.406251,239.99108)"
        x1="5.1590977"
-       y1="22.671968"
+       y1="-0.90000182"
        x2="5.1590977"
-       y2="28.531284" />
+       y2="6.5374513" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3852"
@@ -80,6 +80,26 @@
        y1="-0.42856151"
        x2="4.2857141"
        y2="25.12962" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3931"
+       id="linearGradient2999"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.50002135,0,0,1,90.406144,239.99108)"
+       x1="5.1590977"
+       y1="-0.90000182"
+       x2="5.1590977"
+       y2="6.5374513" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3931"
+       id="linearGradient3771"
+       x1="5"
+       y1="3.6083984e-06"
+       x2="5"
+       y2="4.6428609"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(90.40625,239.99107)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -88,9 +108,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="4.029641"
-     inkscape:cy="-15.746097"
+     inkscape:zoom="22.4"
+     inkscape:cx="3.0574902"
+     inkscape:cy="2.7355343"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -102,7 +122,13 @@
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
-     fit-margin-bottom="0" />
+     fit-margin-bottom="0"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-global="false" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -119,11 +145,13 @@
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-90.40625,-213.99107)">
-    <path
-       inkscape:connector-curvature="0"
-       style="opacity:0.25;color:#000000;fill:url(#linearGradient4016);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       d="m 90.40625,237.87053 0,9.08482 10,0 0,-9.08482 -10,0 z"
-       id="rect3921" />
+     transform="translate(-90.40625,-239.99107)">
+    <rect
+       style="color:#000000;fill:url(#linearGradient3771);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;opacity:0.4"
+       id="shadow"
+       width="10"
+       height="4.6428571"
+       x="90.40625"
+       y="239.99107" />
   </g>
 </svg>

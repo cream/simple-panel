@@ -11,7 +11,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="10"
-   height="36"
+   height="24"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.0 r9654"
@@ -19,15 +19,15 @@
   <defs
      id="defs4">
     <linearGradient
-       id="linearGradient3931">
+       id="linearGradient4464">
       <stop
-         style="stop-color:#000000;stop-opacity:1;"
+         style="stop-color:#ffffff;stop-opacity:0.85589522;"
          offset="0"
-         id="stop3933" />
+         id="stop4466" />
       <stop
-         style="stop-color:#000000;stop-opacity:0;"
+         style="stop-color:#ffffff;stop-opacity:0.43668121;"
          offset="1"
-         id="stop3935" />
+         id="stop4468" />
     </linearGradient>
     <linearGradient
        id="linearGradient3852">
@@ -43,23 +43,13 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3852"
-       id="linearGradient3991"
+       id="linearGradient4019"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.25,0,0,1,90.40625,213.99106)"
-       x1="233.34523"
-       y1="248.79689"
-       x2="233.34523"
-       y2="219.92032" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3931"
-       id="linearGradient3993"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.25,0,0,1,90.406251,213.99106)"
-       x1="7.0710669"
-       y1="24.50461"
-       x2="7.0710669"
-       y2="27.411541" />
+       gradientTransform="translate(90.406255,225.99106)"
+       x1="4.2857132"
+       y1="-0.42855999"
+       x2="4.2857141"
+       y2="25.12962" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3931"
@@ -71,15 +61,25 @@
        x2="5.1590977"
        y2="28.531284" />
     <linearGradient
+       id="linearGradient3931">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3933" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3935" />
+    </linearGradient>
+    <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient3852"
-       id="linearGradient4019"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(90.40625,213.99106)"
-       x1="4.2857141"
-       y1="-0.42856151"
-       x2="4.2857141"
-       y2="25.12962" />
+       xlink:href="#linearGradient4464"
+       id="linearGradient4470"
+       x1="95.267609"
+       y1="225.80611"
+       x2="95.267609"
+       y2="249.98909"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -88,9 +88,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="63.356767"
-     inkscape:cx="0.16727301"
-     inkscape:cy="8.8077332"
+     inkscape:zoom="15.839192"
+     inkscape:cx="-12.992102"
+     inkscape:cy="11.935194"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -119,19 +119,14 @@
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-90.40625,-213.99107)">
-    <path
-       style="color:#000000;fill:url(#linearGradient4019);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:30;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       d="m 90.40625,213.99107 0,24 10,0 0,-24 z"
-       id="rect3082"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
+     transform="translate(-90.40625,-225.99107)">
     <rect
-       y="237.89107"
-       x="90.40625"
-       height="1"
+       style="color:#000000;fill:url(#linearGradient4470);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="stretch"
        width="10"
-       id="rect3770"
-       style="opacity:0.59999999999999998;color:#000000;fill:#9b9b9b;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       height="24"
+       x="90.40625"
+       y="225.99107"
+       inkscape:label="#background" />
   </g>
 </svg>
