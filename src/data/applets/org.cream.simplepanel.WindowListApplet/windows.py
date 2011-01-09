@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+import gtk
 import gobject
 
 import ooxcb
@@ -134,6 +133,9 @@ class Window(object):
         self._window = window
         self.icon_size = icon_size
 
+        theme = gtk.icon_theme_get_default()
+        self.icon_fallback = theme.lookup_icon('gnome-unknown', self.icon_size, 0).get_filename()
+
 
     def to_dict(self):
         return {
@@ -146,7 +148,10 @@ class Window(object):
     @cached_property
     def icon(self):
         icon_data = self._window.get_property('_NET_WM_ICON', 'CARDINAL').reply()
-        icon = convert_icon(icon_data.value, self.icon_size)
+        if icon_data.value:
+            icon = convert_icon(icon_data.value, self.icon_size)
+        else:
+            icon = gtk.gdk.pixbuf_new_from_file_at_size(self.icon_fallback, self.icon_size, self.icon_size)
         return icon
 
 
