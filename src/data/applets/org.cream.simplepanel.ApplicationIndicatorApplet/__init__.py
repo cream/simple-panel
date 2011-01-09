@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+import re
 import gobject
 import gtk
 import cairo
@@ -10,6 +10,8 @@ FONT = ('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 FONT_SIZE = 14
 COLOR = (.1, .1, .1, 1)
 PADDING = 5
+
+PATH_RE = re.compile('(/.+)+')
 
 
 class Indicator(object):
@@ -38,6 +40,10 @@ class Indicator(object):
     def lookup_icon(self, size):
 
         icon_name = self.icon_name
+        
+        if PATH_RE.match(icon_name):
+            return icon_name
+
         if icon_name in self.icons:
             return self.icons[icon_name]
 
@@ -55,11 +61,10 @@ class Indicator(object):
 
     def get_icon_path(self, size):
 
-        if self.item.status == self.status:
-            return self.lookup_icon(size)
-        else:
+        if not self.item.status == self.status:
             self.status = self.item.status
-            return self.lookup_icon(size)
+
+        return self.lookup_icon(size)
 
 
 
