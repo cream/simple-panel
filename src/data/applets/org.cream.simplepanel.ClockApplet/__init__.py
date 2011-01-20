@@ -20,16 +20,29 @@ class ClockApplet(simplepanel.applet.Applet):
 
         gobject.timeout_add(1000, self.update)
         
+        self.config.connect('field-value-changed', self.config_changed)
+        
+        
+    def config_changed(self, config, key, value):
+        
+        try:
+            setattr(self.config, key, value)
+        except:
+            pass
+        
+        self.reallocate()
+        self.update()
+
         
     def update(self):
-    
+
         self.draw()
         return True
 
 
     def render(self, ctx):
 
-        s = time.strftime('%H:%M')
+        s = time.strftime(self.config.format)
 
         ctx.set_operator(cairo.OPERATOR_OVER)
         ctx.set_source_rgba(*COLOR)
@@ -37,15 +50,14 @@ class ClockApplet(simplepanel.applet.Applet):
         ctx.set_font_size(FONT_SIZE)
 
         x_bearing, y_bearing, width, height = ctx.text_extents(s)[:4]
-        ctx.move_to(PADDING, 24 - (24 - height) / 2)
-
+        ctx.move_to(PADDING, (24 - height) / 2 - y_bearing)
         ctx.show_text(s)
         ctx.stroke()
 
 
     def allocate(self, height):
 
-        s = time.strftime('%H:%M')
+        s = time.strftime(self.config.format)
 
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 100, height)
         ctx = cairo.Context(surface)

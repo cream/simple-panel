@@ -95,6 +95,7 @@ class Windows(gobject.GObject):
                 32,
                 [1, window._window.get_internal(), 0]
             )
+            self.conn.flush()
         #self.pywmctrl._send_clientmessage(
             #window._window,
             #'_NET_WM_STATE',

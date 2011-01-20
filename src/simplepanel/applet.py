@@ -20,25 +20,41 @@ import inspect
 import os.path
 import weakref
 import gobject
+import gtk
 import threading
 import tempfile
 
+import cream.base
+
 APPLETS = dict()
 
-class Applet(gobject.GObject):
+class Applet(gobject.GObject, cream.base.Component):
 
     __gtype_name__ = 'Applet'
     __gsignals__ = {
         'render-request': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_PYOBJECT, ()),
         'allocation-changed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
-        'allocation-changed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         'click': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT, gobject.TYPE_INT)),
         }
 
     def __init__(self):
+        
         gobject.GObject.__init__(self)
+        cream.base.Component.__init__(self)
         self.allocation = None
         self.position = None
+        
+        self.menu = gtk.Menu()
+        
+        settings_item = gtk.ImageMenuItem(stock_id=gtk.STOCK_PREFERENCES)
+        settings_item.connect('activate', lambda *args: self.config.show_dialog())
+        self.menu.append(settings_item)
+
+        self.menu.show_all()
+        
+
+    def show_menu(self):
+        self.menu.popup(None, None, None, 0, 0)
 
 
     def draw(self):
@@ -66,6 +82,10 @@ class Applet(gobject.GObject):
 
     def get_allocation(self):
         return self.allocation
+    
+    
+    def reallocate(self):
+        self.allocate(self.get_allocation()[1])
 
 
     def allocate(self, height):

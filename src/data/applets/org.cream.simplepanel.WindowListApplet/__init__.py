@@ -59,6 +59,7 @@ class WindowListApplet(simplepanel.applet.Applet):
         width = PADDING
 
         for window in self.windows.on_current_desktop:
+            print window.title
             icon = window.icon
             if icon is not None:
                 width += icon.get_width() + PADDING
