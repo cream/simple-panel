@@ -30,7 +30,7 @@ CATEGORY_ICONS = {
 CATEGORIES = ['Network', 'Graphics', 'Office', 'Development', 'Audio', 'Game', 'Utility', 'System', 'Settings']
 
 class Category(gobject.GObject):
-    
+
     __gtype_name__ = 'Category'
     __gsignals__ = {
         'hide': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
@@ -39,7 +39,7 @@ class Category(gobject.GObject):
     def __init__(self, id_):
         
         gobject.GObject.__init__(self)
-        
+
         self.id_ = id_
 
         self.bubble = Bubble()
@@ -49,25 +49,25 @@ class Category(gobject.GObject):
         self.layout.show_all()
 
         self.bubble.add(self.layout)
-        
+
         self.bubble.window.connect('button-press-event', self.bubble_button_press_cb)
-        
-        
+
+
     def show(self, x, y):
-        
+
         self.bubble.show(x, y)
         while gtk.events_pending():
             gtk.main_iteration()
         gtk.gdk.pointer_grab(self.bubble.window.window, owner_events=True, event_mask=self.bubble.window.get_events() | gtk.gdk.BUTTON_PRESS_MASK)
-        
-        
+
+
     def hide(self):
 
         gtk.gdk.pointer_ungrab()
         self.bubble.hide()
         self.emit('hide')
-        
-        
+
+
     def bubble_button_press_cb(self, source, event):
 
         if event.x <= self.bubble.window.allocation.x\
@@ -77,10 +77,10 @@ class Category(gobject.GObject):
                 gtk.gdk.pointer_ungrab()
                 self.bubble.hide()
                 self.emit('hide')
-        
+
 
     def add_item(self, desktop_entry):
-    
+
         item = MenuItem(desktop_entry)
         item.connect('button-release-event', self.button_release_cb)
         item.show()
@@ -88,10 +88,10 @@ class Category(gobject.GObject):
 
 
     def button_release_cb(self, source, event):
-        
+
         self.bubble.hide()
         self.emit('hide')
-        
+
         exec_ = source.desktop_entry.exec_
         exec_ = exec_.replace('%U', '')
         exec_ = exec_.replace('%u', '')
@@ -109,13 +109,13 @@ class MenuApplet(simplepanel.applet.Applet):
 
         self.default_size = 22
         self.padding = 5
-        
+
         self._active_menu = None
 
         self.connect('click', self.click_cb)
-        
+
         self.categories = []
-        
+
         for cat in CATEGORIES:
             category = Category(cat)
             category.connect('hide', self.menu_hide_cb)
@@ -124,10 +124,10 @@ class MenuApplet(simplepanel.applet.Applet):
             for desktop_entry in desktop_entries:
                 if cat in desktop_entry.categories:
                     category.add_item(desktop_entry)
-                    
-                    
+
+
     def menu_hide_cb(self, source):
-        
+
         if self._active_menu == source:
             self._active_menu = None
 
@@ -146,7 +146,7 @@ class MenuApplet(simplepanel.applet.Applet):
     def click_cb(self, applet, x, y):
 
         category, position, width = self.get_category_at_coords(x, y)
-        
+
         if self._active_menu:
             self._active_menu.hide()
         category.show(position + width/2, y)
@@ -172,7 +172,7 @@ class MenuApplet(simplepanel.applet.Applet):
             icon_info = theme.lookup_icon(icon_name, 22, 0)
             pb = gtk.gdk.pixbuf_new_from_file(icon_info.get_filename())
             pb = pb.scale_simple(22, 22, gtk.gdk.INTERP_HYPER)
-            
+
             width = height = 22
 
             ctx.set_source_pixbuf(pb, position, (self.get_allocation()[1] - height) / 2)
