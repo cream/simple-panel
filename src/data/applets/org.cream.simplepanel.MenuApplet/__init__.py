@@ -146,12 +146,15 @@ class MenuApplet(simplepanel.applet.Applet):
             x1, y1 = x0 + w, y0 + h
             if x >= x0 and x <= x1 and y >= y0 and y <= y1:
                 return (category, x0, x1-x0)
-        return None
+
+        return (None, None, None)
 
 
     def click_cb(self, applet, x, y):
 
         category, position, width = self.get_category_at_coords(x, y)
+        if not category:
+            return
 
         if self._active_menu:
             self._active_menu.hide()
