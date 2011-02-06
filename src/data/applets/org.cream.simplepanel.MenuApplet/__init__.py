@@ -42,7 +42,7 @@ class Category(gobject.GObject):
 
         gobject.GObject.__init__(self)
 
-        self.id_ = id_
+        self.id = id_
 
         self.bubble = Bubble(base_path)
 
@@ -168,7 +168,7 @@ class MenuApplet(simplepanel.applet.Applet):
         position = PADDING
 
         for category in self.categories:
-            icon_name = CATEGORY_ICONS[category.id_]
+            icon_name = CATEGORY_ICONS[category.id]
             theme = gtk.icon_theme_get_default()
             icon_info = theme.lookup_icon(icon_name, 22, 0)
             pb = gtk.gdk.pixbuf_new_from_file(icon_info.get_filename())
