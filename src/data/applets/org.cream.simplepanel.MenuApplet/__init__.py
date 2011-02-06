@@ -2,6 +2,7 @@ import gobject
 import gtk
 import cairo
 import re
+import thread
 
 import simplepanel.applet
 
@@ -121,11 +122,15 @@ class MenuApplet(simplepanel.applet.Applet):
             category = Category(cat, self.context.get_path())
             category.connect('hide', self.menu_hide_cb)
             self.categories.append(category)
-            desktop_entries = DesktopEntry.get_all()
-            for desktop_entry in desktop_entries:
-                if cat in desktop_entry.categories:
-                    category.add_item(desktop_entry)
 
+        thread.start_new_thread(self.fill_categories, ())
+
+
+    def fill_categories(self):
+        for desktop_entry in DesktopEntry.get_all():
+            for category in self.categories:
+                if category.id in desktop_entry.categories:
+                    category.add_item(desktop_entry)
 
     def menu_hide_cb(self, source):
 
