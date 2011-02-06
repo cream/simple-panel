@@ -86,15 +86,16 @@ class PanelWindow(gtk.Window):
 
         self.display = self.get_display()
         self.screen = self.display.get_default_screen()
-        width, height = self.screen.get_width(), self.screen.get_height()
 
-        self.set_size_request(width, 40)
+        self.set_size_request(self.screen.get_width(), 40)
 
         self.connect('expose-event', self.expose_cb)
         self.connect('realize', self.realize_cb)
 
+        width, height = self.get_size()
+
         # Draw the background…
-        self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         background_ctx = cairo.Context(self.background_surface)
 
         background = cream.gui.svg.Handle('data/themes/default/background.svg')
@@ -104,7 +105,7 @@ class PanelWindow(gtk.Window):
         background.render_cairo(background_ctx)
 
         # … and the shadow…
-        self.shadow_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        self.shadow_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         shadow_ctx = cairo.Context(self.shadow_surface)
         shadow_ctx.translate(0, 23)
         shadow = cream.gui.svg.Handle('data/themes/default/shadow.svg')
@@ -113,7 +114,7 @@ class PanelWindow(gtk.Window):
         shadow.render_cairo(shadow_ctx)
 
         # … and the border.
-        self.border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        self.border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         border_ctx = cairo.Context(self.border_surface)
         border_ctx.translate(0, 23)
         border = cream.gui.svg.Handle('data/themes/default/border.svg')

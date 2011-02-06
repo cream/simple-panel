@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 
+import os
 import gtk
 import cairo
 import cream.gui.svg
@@ -24,9 +25,11 @@ MARGIN = 5
 
 class BubbleWindow(gtk.Window):
 
-    def __init__(self):
+    def __init__(self, base_path):
 
         gtk.Window.__init__(self)
+
+        self.base_path = base_path
 
         # Setting up the Widget's window...
         #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DOCK)
@@ -37,7 +40,7 @@ class BubbleWindow(gtk.Window):
         self.set_app_paintable(True)
         self.set_resizable(False)
         self.set_colormap(self.get_screen().get_rgba_colormap())
-        
+
         self.set_events(self.get_events() | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
 
         self.display = self.get_display()
@@ -46,36 +49,36 @@ class BubbleWindow(gtk.Window):
         self.connect('expose-event', self.expose_cb)
         self.connect('size-allocate', self.size_allocate_cb)
         self.connect('realize', self.realize_cb)
-        
+
         self._render_background()
-        
-        
+
+
     def set_tip_position(self, tip_x, tip_y):
-        
+
         x = tip_x - MARGIN - 20 - 10
         if x <= 0:
             left = 20 + x
             self._render_background(max(0, left))
 
         self.move(max(0, x), tip_y - MARGIN)
-        
-        
+
+
     def size_allocate_cb(self, source, allocation):
         self._render_background()
 
 
     def _render_background(self, left=20):
-        
+
         window_width, window_height = self.get_size()
-        
+
         margin = MARGIN
-        
+
         tip_width = 10
         tip_height = 10
-        
+
         tip_x = left + tip_width + margin
         tip_y = margin
-        
+
         width = window_width - 2*margin
         height = window_height - 2*margin - 10
 
@@ -96,7 +99,7 @@ class BubbleWindow(gtk.Window):
         self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
         background_ctx = cairo.Context(self.background_surface)
 
-        background = cream.gui.svg.Handle('/home/stein/Labs/Experiments/SVGBubble/background.svg')
+        background = cream.gui.svg.Handle(os.path.join(self.base_path, 'background.svg'))
         background.dom.getElementById('page').setAttribute('width', str(window_width))
         background.dom.getElementById('page').setAttribute('height', str(window_height))
         background.dom.getElementById('shadow').setAttribute('d', path)
@@ -128,45 +131,45 @@ class BubbleWindow(gtk.Window):
 
 
 class Bubble(object):
-    
-    def __init__(self):
-        
-        self.window = BubbleWindow()
+
+    def __init__(self, base_path):
+
+        self.window = BubbleWindow(base_path)
 
         self.alignment = gtk.Alignment()
         self.alignment.set_padding(MARGIN + 15 + 5, MARGIN + 5, MARGIN + 5, MARGIN + 5)
         self.window.add(self.alignment)
-        
+
         self.add = self.alignment.add
         self.remove = self.alignment.remove
-        
-        
+
+
     def show(self, tip_x=None, tip_y=None):
 
         self.window.show_all()
-        
+
         if tip_x and tip_y:
             self.window.set_tip_position(tip_x, tip_y)
-        
-        
+
+
     def hide(self):
 
         self.window.hide()
-        
+
 
 class Test(object):
-    
+
     def __init__(self):
 
         self.bubble = Bubble(100, 25)
 
         self.icon = gtk.image_new_from_file('soundcard.png')
         self.button = gtk.Button("Hello World!")
-        
+
         self.layout = gtk.VBox()
         self.layout.pack_start(self.icon, False, True)
         self.layout.pack_start(self.button, False, True)
-        
+
         self.layout.show_all()
 
         self.bubble.add(self.layout)
