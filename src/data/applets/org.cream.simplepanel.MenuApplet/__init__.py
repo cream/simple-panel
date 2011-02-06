@@ -81,6 +81,9 @@ class Category(gobject.GObject):
 
     def add_item(self, desktop_entry):
 
+        if desktop_entry.has_option_default('NoDisplay') and desktop_entry.no_display:
+            return
+
         item = MenuItem(desktop_entry)
         item.connect('button-release-event', self.button_release_cb)
         item.show()
