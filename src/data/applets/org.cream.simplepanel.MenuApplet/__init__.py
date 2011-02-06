@@ -35,14 +35,14 @@ class Category(gobject.GObject):
     __gsignals__ = {
         'hide': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
         }
-    
-    def __init__(self, id_):
-        
+
+    def __init__(self, id_, base_path):
+
         gobject.GObject.__init__(self)
 
         self.id_ = id_
 
-        self.bubble = Bubble()
+        self.bubble = Bubble(base_path)
 
         self.layout = gtk.VBox()
         self.layout.set_spacing(2)
@@ -117,7 +117,7 @@ class MenuApplet(simplepanel.applet.Applet):
         self.categories = []
 
         for cat in CATEGORIES:
-            category = Category(cat)
+            category = Category(cat, self.context.get_path())
             category.connect('hide', self.menu_hide_cb)
             self.categories.append(category)
             desktop_entries = DesktopEntry.get_all()

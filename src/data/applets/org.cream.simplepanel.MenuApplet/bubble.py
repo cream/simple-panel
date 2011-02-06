@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 
+import os
 import gtk
 import cairo
 import cream.gui.svg
@@ -24,9 +25,11 @@ MARGIN = 5
 
 class BubbleWindow(gtk.Window):
 
-    def __init__(self):
+    def __init__(self, base_path):
 
         gtk.Window.__init__(self)
+
+        self.base_path = base_path
 
         # Setting up the Widget's window...
         #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DOCK)
@@ -96,7 +99,7 @@ class BubbleWindow(gtk.Window):
         self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
         background_ctx = cairo.Context(self.background_surface)
 
-        background = cream.gui.svg.Handle('/home/stein/Labs/Experiments/SVGBubble/background.svg')
+        background = cream.gui.svg.Handle(os.path.join(self.base_path, 'background.svg'))
         background.dom.getElementById('page').setAttribute('width', str(window_width))
         background.dom.getElementById('page').setAttribute('height', str(window_height))
         background.dom.getElementById('shadow').setAttribute('d', path)
@@ -128,10 +131,10 @@ class BubbleWindow(gtk.Window):
 
 
 class Bubble(object):
-    
-    def __init__(self):
-        
-        self.window = BubbleWindow()
+
+    def __init__(self, base_path):
+
+        self.window = BubbleWindow(base_path)
 
         self.alignment = gtk.Alignment()
         self.alignment.set_padding(MARGIN + 15 + 5, MARGIN + 5, MARGIN + 5, MARGIN + 5)
