@@ -1,6 +1,7 @@
 import gobject
 import gtk
 import cairo
+import re
 
 import simplepanel.applet
 
@@ -11,6 +12,7 @@ from bubble import Bubble
 from menuitem import MenuItem
 
 PADDING = 5
+KICK = re.compile('%[ifFuUck]')
 
 CATEGORY_ICONS = {
         "AudioVideo": 'applications-multimedia',
@@ -95,11 +97,7 @@ class Category(gobject.GObject):
         self.bubble.hide()
         self.emit('hide')
 
-        exec_ = source.desktop_entry.exec_
-        exec_ = exec_.replace('%U', '')
-        exec_ = exec_.replace('%u', '')
-        exec_ = exec_.replace('%s', '')
-        exec_ = exec_.replace('%F', '')
+        exec_ = KICK.sub('', source.desktop_entry.exec_)
 
         Subprocess([exec_.strip()]).run()
 
