@@ -158,7 +158,7 @@ class MenuApplet(simplepanel.applet.Applet):
 
         if self._active_menu:
             self._active_menu.hide()
-        category.show(position + width/2, y)
+        category.show(position + width/2 + self.get_position()[0], self.get_allocation()[1] + 1)
         self._active_menu = category
 
 
