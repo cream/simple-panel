@@ -162,11 +162,14 @@ class Panel(cream.Module):
 
     def __init__(self):
 
-        cream.Module.__init__(self, 'org.cream.Panel')
+        cream.Module.__init__(self, 'org.cream.SimplePanel')
 
         # Load themes and applets...
-        applets_dir = os.path.join(self.context.get_path(), 'data/applets')
-        self.applets = cream.manifest.ManifestDB(applets_dir, 'org.cream.simplepanel.Applet')
+        applets_dirs = [
+            os.path.join(self.context.get_path(), 'data/applets'),
+            os.path.join(self.context.get_user_path(), 'data/applets')
+            ]
+        self.applets = cream.manifest.ManifestDB(applets_dirs, 'org.cream.simplepanel.Applet')
         self.layout = copy_layout(self.config.layout)
         #self.layout = json.load(open('applets.json'))
 
