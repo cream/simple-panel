@@ -15,22 +15,24 @@ from menuitem import MenuItem
 PADDING = 5
 KICK = re.compile('%[ifFuUck]')
 
-CATEGORY_ICONS = {
-        "AudioVideo": 'applications-multimedia',
-        "Audio": 'applications-multimedia',
-        "Video": 'applications-multimedia',
-        "Development": 'applications-development',
-        "Education": 'applications-science',
-        "Game": 'applications-games',
-        "Graphics": 'applications-graphics',
-        "Network": 'applications-internet',
-        "Office": 'applications-office',
-        "Settings": 'applications-engineering',
-        "System": 'applications-system',
-        "Utility": 'applications-other',
+CATEGORIES = {
+        "AudioVideo": ('Multimedia', 'applications-multimedia'),
+        "Audio": ('Multimedia', 'applications-multimedia'),
+        "Video": ('Multimedia', 'applications-multimedia'),
+        "Multimedia": ('Multimedia', 'applications-multimedia'),
+        "Development": ('Development', 'applications-development'),
+        "Education": ('Education', 'applications-science'),
+        "Games": ('Games', 'applications-games'),
+        "Game": ('Games', 'applications-games'),
+        "Graphics": ('Graphics', 'applications-graphics'),
+        "Network": ('Network', 'applications-internet'),
+        "Office": ('Office', 'applications-office'),
+        "Settings": ('Settings', 'applications-engineering'),
+        "System": ('System', 'applications-system'),
+        "Utility": ('Utility', 'applications-other'),
     }
 
-CATEGORIES = ['Network', 'Graphics', 'Office', 'Development', 'Audio', 'Game', 'Utility', 'System', 'Settings']
+MENU_CATEGORIES = ['Network', 'Graphics', 'Office', 'Development', 'Multimedia', 'Games', 'Utility', 'System', 'Settings']
 
 class Category(gobject.GObject):
 
@@ -119,8 +121,8 @@ class MenuApplet(simplepanel.applet.Applet):
 
         self.categories = []
 
-        for cat in CATEGORIES:
-            category = Category(cat, self.context.get_path())
+        for cat in MENU_CATEGORIES:
+            category = Category(CATEGORIES[cat][0], self.context.get_path())
             category.connect('hide', self.menu_hide_cb)
             self.categories.append(category)
 
@@ -197,7 +199,7 @@ class MenuApplet(simplepanel.applet.Applet):
         position = PADDING
 
         for category in self.categories:
-            icon_name = CATEGORY_ICONS[category.id]
+            icon_name = CATEGORIES[category.id][1]
             theme = gtk.icon_theme_get_default()
             icon_info = theme.lookup_icon(icon_name, 22, 0)
             pb = gtk.gdk.pixbuf_new_from_file(icon_info.get_filename())
