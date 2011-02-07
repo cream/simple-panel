@@ -323,19 +323,22 @@ class Panel(cream.Module):
     def mouse_motion_cb(self, window, event):
         applet = self.get_applet_at_coords(event.x, event.y)
         if applet:
-            applet.emit('mouse-motion', event.x, event.y)
+            offset_x, offset_y = applet.get_position()
+            applet.emit('mouse-motion', event.x - offset_x, event.y - offset_y)
 
 
     def mouse_enter_cb(self, window, event):
         applet = self.get_applet_at_coords(event.x, event.y)
         if applet:
-            applet.emit('mouse-enter', event.x, event.y)
+            offset_x, offset_y = applet.get_position()
+            applet.emit('mouse-enter', event.x - offset_x, event.y - offset_y)
 
 
     def mouse_leave_cb(self, window, event):
         applet = self.get_applet_at_coords(event.x, event.y)
         if applet:
-            applet.emit('mouse-leave', event.x, event.y)
+            offset_x, offset_y = applet.get_position()
+            applet.emit('mouse-leave', event.x - offset_x, event.y - offset_y)
 
 
 
