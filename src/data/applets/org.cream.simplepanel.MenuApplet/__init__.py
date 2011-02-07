@@ -133,7 +133,8 @@ class MenuApplet(simplepanel.applet.Applet):
                     category.add_item(desktop_entry)
 
     def menu_hide_cb(self, source):
-        pass
+        if self._active_menu == source:
+            self._active_menu = None
 
 
     def get_category_at_coords(self, x, y):
@@ -154,13 +155,18 @@ class MenuApplet(simplepanel.applet.Applet):
         if not category:
             return
 
-        if self._active_menu:
+        if self._active_menu == category:
             self._active_menu.hide()
+        elif self._active_menu != category and self._active_menu:
+            self._active_menu.hide()
+            x = position + width/2 + self.get_position()[0]
+            category.show(x, self.get_allocation()[1] + 1)
+            self._active_menu = category
+        else:
+            x = position + width/2 + self.get_position()[0]
+            category.show(x, self.get_allocation()[1] + 1)
+            self._active_menu = category
 
-        if not self._active_menu == category:
-            category.show(position + width/2 + self.get_position()[0],
-                          self.get_allocation()[1] + 1)
-        self._active_menu = category
 
 
     def get_size(self):
