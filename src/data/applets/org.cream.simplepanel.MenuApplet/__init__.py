@@ -4,6 +4,8 @@ import cairo
 import re
 import thread
 
+from collections import defaultdict
+
 import simplepanel.applet
 
 from cream.util.subprocess import Subprocess
@@ -130,10 +132,20 @@ class MenuApplet(simplepanel.applet.Applet):
 
 
     def fill_categories(self):
+
+        desktop_entries = defaultdict(list)
+
         for desktop_entry in DesktopEntry.get_all():
-            for category in self.categories:
-                if category.id in desktop_entry.categories:
-                    category.add_item(desktop_entry)
+            category = CATEGORIES.get(desktop_entry.recommended_category)
+            if category:
+                desktop_entries[category[0]].append(desktop_entry)
+
+        for category in self.categories:
+            entries = desktop_entries[category.id]
+            entries.sort(key=lambda entry: entry.name.lower())
+            for entry in entries:
+                category.add_item(entry)
+
 
     def menu_hide_cb(self, source):
         if self._active_menu == source:
