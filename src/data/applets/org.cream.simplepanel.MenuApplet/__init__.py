@@ -90,7 +90,7 @@ class Category(gobject.GObject):
                 self.emit('hide')
 
 
-    def add_item(self, desktop_entry):
+    def add_item(self, desktop_entry, single_column=False):
 
         if desktop_entry.has_option_default('NoDisplay') and desktop_entry.no_display:
             return
@@ -99,13 +99,16 @@ class Category(gobject.GObject):
         item.connect('button-release-event', self.button_release_cb)
         item.show()
 
-        if self.wrapper_children == 2:
-            self.wrapper = gtk.HBox()
-            self.layout.pack_start(self.wrapper, False, True)
-            self.wrapper_children = 0
+        if single_column:
+            self.layout.pack_start(item, False, True)
+        else:
+            if self.wrapper_children == 2:
+                self.wrapper = gtk.HBox()
+                self.layout.pack_start(self.wrapper, False, True)
+                self.wrapper_children = 0
 
-        self.wrapper.pack_start(item, False, True)
-        self.wrapper_children += 1
+            self.wrapper.pack_start(item, False, True)
+            self.wrapper_children += 1
 
 
     def button_release_cb(self, source, event):
@@ -154,8 +157,10 @@ class MenuApplet(simplepanel.applet.Applet):
         for category in self.categories:
             entries = desktop_entries[category.id]
             entries.sort(key=lambda entry: entry.name.lower())
+
+            single_column = len(entries) < self.config.single_column_max_items
             for entry in entries:
-                category.add_item(entry)
+                category.add_item(entry, single_column)
 
 
     def menu_hide_cb(self, source):
