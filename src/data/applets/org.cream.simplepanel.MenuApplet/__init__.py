@@ -58,6 +58,7 @@ class Category(gobject.GObject):
         self.bubble.add(self.layout)
 
         self.wrapper = gtk.HBox()
+        self.layout.pack_start(self.wrapper)
         self.wrapper_children = 0
 
         self.bubble.window.connect('button-press-event', self.bubble_button_press_cb)
@@ -99,8 +100,8 @@ class Category(gobject.GObject):
         item.show()
 
         if self.wrapper_children == 2:
-            self.layout.pack_start(self.wrapper, False, True)
             self.wrapper = gtk.HBox()
+            self.layout.pack_start(self.wrapper, False, True)
             self.wrapper_children = 0
 
         self.wrapper.pack_start(item, False, True)
