@@ -41,30 +41,30 @@ class MenuItem(gtk.Widget):
     def __init__(self, desktop_entry):
 
         gtk.Widget.__init__(self)
-        
+
         self.connect('enter-notify-event', self.enter_notify_cb)
         self.connect('leave-notify-event', self.leave_notify_cb)
-        
+
         self.desktop_entry = desktop_entry
 
         icon_path = lookup_icon(self.desktop_entry.icon)
         pb = gtk.gdk.pixbuf_new_from_file(icon_path)
         self._icon_pixbuf = pb.scale_simple(32, 32, gtk.gdk.INTERP_HYPER)
-        
+
         self._entered = False
         self._animation = None
         self._background_alpha = 0
-        
-        
+
+
     def enter_notify_cb(self, source, event):
-        
+
         def update(t, state):
             self._background_alpha = state
             self.draw()
-            
+
         def completed_cb(source):
             self._animation = None
-            
+
         if self._animation:
             self._animation.stop()
 
@@ -73,17 +73,17 @@ class MenuItem(gtk.Widget):
         t.connect('completed', completed_cb)
         t.run()
         self._animation = t
-        
-        
+
+
     def leave_notify_cb(self, source, event):
-        
+
         def update(t, state, start):
             self._background_alpha = start - state * start
             self.draw()
-            
+
         def completed_cb(source):
             self._animation = None
-            
+
         if self._animation:
             self._animation.stop()
 
@@ -92,10 +92,10 @@ class MenuItem(gtk.Widget):
         t.connect('completed', completed_cb)
         t.run()
         self._animation = t
-        
-        
+
+
     def event_cb(self, source, event):
-        
+
         # TODO: Emit leave event when leaving top level widget.
         if event.type == gtk.gdk.LEAVE_NOTIFY and self._entered:
             self._entered = False
@@ -138,7 +138,7 @@ class MenuItem(gtk.Widget):
         parent = self.get_parent()
         while parent.flags() & gtk.NO_WINDOW:
             parent = parent.get_parent()
-            
+
         parent.connect('event', self.event_cb)
 
 
@@ -175,15 +175,15 @@ class MenuItem(gtk.Widget):
 
         ctx.translate(self.allocation.x, self.allocation.y)
         ctx.set_line_width(1)
-        
+
         ctx.set_source_rgba(1, 1, 1, .2 * self._background_alpha)
         rounded_rectangle(ctx, 0, 0, 250, 36, 3)
         ctx.fill()
-        
+
         ctx.set_source_rgba(1, 1, 1, .1 * self._background_alpha)
         rounded_rectangle(ctx, .5, .5, 249, 35, 3)
         ctx.stroke()
-        
+
         ctx.translate(2, 2)
         ctx.set_source_pixbuf(self._icon_pixbuf, 0, 0)
         ctx.paint()
