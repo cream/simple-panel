@@ -41,20 +41,20 @@ class Applet(gobject.GObject, cream.base.Component):
         }
 
     def __init__(self):
-        
+
         gobject.GObject.__init__(self)
         cream.base.Component.__init__(self)
         self.allocation = None
         self.position = None
-        
+
         self.menu = gtk.Menu()
-        
+
         settings_item = gtk.ImageMenuItem(stock_id=gtk.STOCK_PREFERENCES)
         settings_item.connect('activate', lambda *args: self.config.show_dialog())
         self.menu.append(settings_item)
 
         self.menu.show_all()
-        
+
 
     def show_menu(self):
         self.menu.popup(None, None, None, 0, 0)
@@ -85,8 +85,8 @@ class Applet(gobject.GObject, cream.base.Component):
 
     def get_allocation(self):
         return self.allocation
-    
-    
+
+
     def reallocate(self):
         self.allocate(self.get_allocation()[1])
 
