@@ -132,7 +132,7 @@ class PanelWindow(gtk.Window):
 
 
     def realize_cb(self, window):
-        self.window.set_events(self.window.get_events() | gtk.gdk.BUTTON_RELEASE_MASK)
+        self.window.set_events(self.window.get_events() | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.POINTER_MOTION_MASK)
         self.window.property_change("_NET_WM_STRUT", "CARDINAL", 32, gtk.gdk.PROP_MODE_REPLACE, [0, 0, 24, 0])
         self.window.input_shape_combine_region(gtk.gdk.region_rectangle((0, 0, self.get_size()[0], 24)), 0, 0)
 
@@ -182,6 +182,9 @@ class Panel(cream.Module):
 
         self.window.connect('expose-event', self.expose_cb)
         self.window.connect('button-release-event', self.click_cb)
+        self.window.connect('motion-notify-event', self.mouse_motion_cb)
+        self.window.connect('enter-notify-event', self.mouse_enter_cb)
+        self.window.connect('leave-notify-event', self.mouse_leave_cb)
 
         self.item_add = gtk.ImageMenuItem(gtk.STOCK_ADD)
         self.item_add.get_children()[0].set_label('Add applet')
@@ -315,6 +318,25 @@ class Panel(cream.Module):
                 applet.emit('click', x, y)
         elif event.button == MOUSE_BUTTON_RIGHT:
             self.menu.popup(None, None, None, event.button, event.get_time())
+
+
+    def mouse_motion_cb(self, window, event):
+        applet = self.get_applet_at_coords(event.x, event.y)
+        if applet:
+            applet.emit('mouse-motion', event.x, event.y)
+
+
+    def mouse_enter_cb(self, window, event):
+        applet = self.get_applet_at_coords(event.x, event.y)
+        if applet:
+            applet.emit('mouse-enter', event.x, event.y)
+
+
+    def mouse_leave_cb(self, window, event):
+        applet = self.get_applet_at_coords(event.x, event.y)
+        if applet:
+            applet.emit('mouse-leave', event.x, event.y)
+
 
 
     def handle_fullscreen_windows(self):
