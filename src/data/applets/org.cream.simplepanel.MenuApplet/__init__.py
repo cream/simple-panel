@@ -115,6 +115,7 @@ class MenuApplet(simplepanel.applet.Applet):
         self._active_menu = None
 
         self.connect('click', self.click_cb)
+        self.connect('mouse-motion', self.mouse_motion_cb)
 
         self.categories = []
 
@@ -163,6 +164,19 @@ class MenuApplet(simplepanel.applet.Applet):
             category.show(x, self.get_allocation()[1] + 1)
             self._active_menu = category
         else:
+            x = position + width/2 + self.get_position()[0]
+            category.show(x, self.get_allocation()[1] + 1)
+            self._active_menu = category
+
+
+    def mouse_motion_cb(self, applet, x, y):
+
+        category, position, width = self.get_category_at_coords(x, y)
+        if not category:
+            return
+
+        if category != self._active_menu and self._active_menu:
+            self._active_menu.hide()
             x = position + width/2 + self.get_position()[0]
             category.show(x, self.get_allocation()[1] + 1)
             self._active_menu = category
