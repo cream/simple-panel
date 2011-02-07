@@ -7,5 +7,6 @@
         <use-feature id="org.cream.config" />
 
         <author name="Sebastian Billaudelle" mail="stein@cream-project.org" />
+        <author name="Kristoffer Kleine" mail="kris.kleine@yahoo.de" />
     </component>
 </manifest>
