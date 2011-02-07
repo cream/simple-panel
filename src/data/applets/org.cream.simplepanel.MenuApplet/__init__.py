@@ -48,6 +48,7 @@ class Category(gobject.GObject):
         gobject.GObject.__init__(self)
 
         self.id = id_
+        self.single_columned = False
 
         self.bubble = Bubble(base_path)
 
@@ -90,16 +91,17 @@ class Category(gobject.GObject):
                 self.emit('hide')
 
 
-    def add_item(self, desktop_entry, single_column=False):
+    def add_item(self, desktop_entry):
 
         if desktop_entry.has_option_default('NoDisplay') and desktop_entry.no_display:
             return
+
 
         item = MenuItem(desktop_entry)
         item.connect('button-release-event', self.button_release_cb)
         item.show()
 
-        if single_column:
+        if self.single_columned:
             self.layout.pack_start(item, False, True)
         else:
             if self.wrapper_children == 2:
@@ -130,10 +132,13 @@ class MenuApplet(simplepanel.applet.Applet):
         self.default_size = 22
         self.padding = 5
 
+        self.single_column_max_items = self.config.single_column_max_items
         self._active_menu = None
 
         self.connect('click', self.click_cb)
         self.connect('mouse-motion', self.mouse_motion_cb)
+
+        self.config.connect('field-value-changed', self.config_value_changed_cb)
 
         self.categories = []
 
@@ -147,20 +152,20 @@ class MenuApplet(simplepanel.applet.Applet):
 
     def fill_categories(self):
 
-        desktop_entries = defaultdict(list)
+        self.desktop_entries = defaultdict(list)
 
         for desktop_entry in DesktopEntry.get_all():
             category = CATEGORIES.get(desktop_entry.recommended_category)
             if category:
-                desktop_entries[category[0]].append(desktop_entry)
+                self.desktop_entries[category[0]].append(desktop_entry)
 
         for category in self.categories:
-            entries = desktop_entries[category.id]
+            entries = self.desktop_entries[category.id]
             entries.sort(key=lambda entry: entry.name.lower())
 
-            single_column = len(entries) < self.config.single_column_max_items
+            category.single_columned = len(entries) <= self.single_column_max_items
             for entry in entries:
-                category.add_item(entry, single_column)
+                category.add_item(entry)
 
 
     def menu_hide_cb(self, source):
@@ -211,6 +216,25 @@ class MenuApplet(simplepanel.applet.Applet):
             category.show(x, self.get_allocation()[1] + 1)
             self._active_menu = category
 
+
+    def config_value_changed_cb(self, sender, field, value):
+
+        if self.single_column_max_items == value:
+            return
+
+        for category in self.categories:
+            entries = self.desktop_entries[category.id]
+            single_columned = len(entries) < value
+            if category.single_columned != single_columned:
+                category.single_columned = single_columned
+
+                for child in category.layout:
+                    child.destroy()
+
+                for entry in self.desktop_entries[category.id]:
+                    category.add_item(entry)
+
+        self.single_column_max_items = value
 
 
     def get_size(self):
