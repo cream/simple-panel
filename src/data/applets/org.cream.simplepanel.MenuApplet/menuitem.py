@@ -188,7 +188,12 @@ class MenuItem(gtk.Widget):
         ctx.set_source_pixbuf(self._icon_pixbuf, 0, 0)
         ctx.paint()
 
-        ctx.set_source_rgba(.1, .1, .1, 1)
+        pattern = cairo.LinearGradient(0, 0, 248, 35)
+        pattern.add_color_stop_rgba(0, .1, .1, .1, 1)
+        pattern.add_color_stop_rgba(.9, .1, .1, .1, 1)
+        pattern.add_color_stop_rgba(1, .1, .1, .1, 0)
+        ctx.set_source(pattern)
+
         ctx.select_font_face('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
         ctx.set_font_size(12)
 
