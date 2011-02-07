@@ -1,3 +1,4 @@
+import os.path
 import math
 import gtk
 import cairo
@@ -15,6 +16,24 @@ def rounded_rectangle(cr, x, y, w, h, r=20):
     cr.arc(x + r, y + h - r, r, .5 * math.pi, math.pi)
     cr.close_path()
 
+def lookup_icon(icon_name):
+    theme = gtk.icon_theme_get_default()
+
+    icon_info = theme.lookup_icon(icon_name, 32, 0)
+    if icon_info:
+        return icon_info.get_filename()
+    elif os.path.isfile(icon_name):
+        return icon_name
+    elif '.' in icon_name:
+        icon_name = os.path.splitext(icon_name)[0]
+        icon_info = theme.lookup_icon(icon_name, 32, 0)
+        if icon_info:
+            return icon_info.get_filename()
+
+    icon_info = theme.lookup_icon('application-default-icon', 32, 0)
+    return icon_info.get_filename()
+
+
 class MenuItem(gtk.Widget):
 
     __gtype_name__ = 'MenuItem'
@@ -28,12 +47,8 @@ class MenuItem(gtk.Widget):
         
         self.desktop_entry = desktop_entry
 
-        icon_name = self.desktop_entry.icon
-        theme = gtk.icon_theme_get_default()
-        icon_info = theme.lookup_icon(icon_name, 32, 0)
-        if not icon_info:
-            icon_info = theme.lookup_icon('application-default-icon', 32, 0)
-        pb = gtk.gdk.pixbuf_new_from_file(icon_info.get_filename())
+        icon_path = lookup_icon(self.desktop_entry.icon)
+        pb = gtk.gdk.pixbuf_new_from_file(icon_path)
         self._icon_pixbuf = pb.scale_simple(32, 32, gtk.gdk.INTERP_HYPER)
         
         self._entered = False
