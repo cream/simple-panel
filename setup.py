@@ -49,7 +49,7 @@ setup(
     author = 'The Cream Project (http://cream-project.org)',
     url = 'http://github.com/cream/simple-panel',
     package_dir = {'simplepanel': 'src/simplepanel'},
-    package_data={'simplepanel': ['add_dialog.glade', 'images/*']},
+    package_data={'simplepanel': ['background.svg']},
     packages = ['simplepanel'],
     data_files = data_files,
     cmdclass={'install_scripts': post_install},
