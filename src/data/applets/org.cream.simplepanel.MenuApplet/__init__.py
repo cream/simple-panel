@@ -11,7 +11,7 @@ import simplepanel.applet
 from cream.util.subprocess import Subprocess
 from cream.xdg.desktopentries import DesktopEntry
 
-from bubble import Bubble
+from simplepanel.ui import Bubble
 from menuitem import MenuItem
 
 PADDING = 5
@@ -43,14 +43,14 @@ class Category(gobject.GObject):
         'hide': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
         }
 
-    def __init__(self, id_, base_path):
+    def __init__(self, id_):
 
         gobject.GObject.__init__(self)
 
         self.id = id_
         self.single_columned = False
 
-        self.bubble = Bubble(base_path)
+        self.bubble = Bubble()
 
         self.layout = gtk.VBox()
         self.layout.set_spacing(2)
@@ -143,7 +143,7 @@ class MenuApplet(simplepanel.applet.Applet):
         self.categories = []
 
         for cat in MENU_CATEGORIES:
-            category = Category(CATEGORIES[cat][0], self.context.get_path())
+            category = Category(CATEGORIES[cat][0])
             category.connect('hide', self.menu_hide_cb)
             self.categories.append(category)
 

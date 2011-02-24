@@ -25,14 +25,13 @@ MARGIN = 5
 
 class BubbleWindow(gtk.Window):
 
-    def __init__(self, base_path):
+    def __init__(self):
 
         gtk.Window.__init__(self)
 
-        self.base_path = base_path
+        self.base_path = '.'
 
         # Setting up the Widget's window...
-        #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DOCK)
         self.set_keep_above(True)
         self.set_skip_pager_hint(True)
         self.set_skip_taskbar_hint(True)
@@ -96,7 +95,9 @@ class BubbleWindow(gtk.Window):
             )
 
         # Draw the background…
-        self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.get_size()[0], self.get_size()[1])
+        self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                                     self.get_size()[0],
+                                                     self.get_size()[1])
         background_ctx = cairo.Context(self.background_surface)
 
         background = cream.gui.svg.Handle(os.path.join(self.base_path, 'background.svg'))
@@ -132,9 +133,9 @@ class BubbleWindow(gtk.Window):
 
 class Bubble(object):
 
-    def __init__(self, base_path):
+    def __init__(self):
 
-        self.window = BubbleWindow(base_path)
+        self.window = BubbleWindow()
 
         self.alignment = gtk.Alignment()
         self.alignment.set_padding(MARGIN + 15 + 5, MARGIN + 5, MARGIN + 5, MARGIN + 5)
@@ -155,25 +156,3 @@ class Bubble(object):
     def hide(self):
 
         self.window.hide()
-
-
-class Test(object):
-
-    def __init__(self):
-
-        self.bubble = Bubble(100, 25)
-
-        self.icon = gtk.image_new_from_file('soundcard.png')
-        self.button = gtk.Button("Hello World!")
-
-        self.layout = gtk.VBox()
-        self.layout.pack_start(self.icon, False, True)
-        self.layout.pack_start(self.button, False, True)
-
-        self.layout.show_all()
-
-        self.bubble.add(self.layout)
-
-if __name__ == '__main__':
-    Test()
-    gtk.main()
