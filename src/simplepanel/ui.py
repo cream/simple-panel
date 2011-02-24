@@ -58,6 +58,10 @@ class BubbleWindow(gtk.Window):
         if x <= 0:
             left = 20 + x
             self._render_background(max(0, left))
+        if x > self.screen.get_width() - self.get_size()[0]:
+            left = self.get_size()[0] - (self.screen.get_width() - tip_x)
+            self._render_background(left)
+
 
         self.move(max(0, x), tip_y - MARGIN)
 
