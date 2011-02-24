@@ -5,6 +5,10 @@
             <objects type="list">
                 <item type="dict">
                     <type type="str">applet</type>
+                    <id type="str">org.cream.simplepanel.SoundApplet</id>
+                </item>
+                <item type="dict">
+                    <type type="str">applet</type>
                     <id type="str">org.cream.simplepanel.ApplicationIndicatorApplet</id>
                 </item>
                 <item type="dict">
