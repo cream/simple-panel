@@ -172,7 +172,6 @@ class Panel(cream.Module):
             ]
         self.applets = cream.manifest.ManifestDB(applets_dirs, 'org.cream.simplepanel.Applet')
         self.layout = copy_layout(self.config.layout)
-        #self.layout = json.load(open('applets.json'))
 
         self.screen = wnck.screen_get_default()
         self.screen.connect('viewports-changed', self.viewports_changed_cb)
