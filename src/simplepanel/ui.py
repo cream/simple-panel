@@ -29,7 +29,7 @@ class BubbleWindow(gtk.Window):
 
         gtk.Window.__init__(self)
 
-        self.base_path = '.'
+        self.base_path = os.path.dirname(os.path.abspath(__file__))
 
         # Setting up the Widget's window...
         self.set_keep_above(True)
