@@ -132,7 +132,7 @@ class PanelWindow(gtk.Window):
 
 
     def realize_cb(self, window):
-        self.window.set_events(self.window.get_events() | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.POINTER_MOTION_MASK)
+        self.window.set_events(self.window.get_events() | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.SCROLL_MASK)
         self.window.property_change("_NET_WM_STRUT", "CARDINAL", 32, gtk.gdk.PROP_MODE_REPLACE, [0, 0, 24, 0])
         self.window.input_shape_combine_region(gtk.gdk.region_rectangle((0, 0, self.get_size()[0], 24)), 0, 0)
 
@@ -184,6 +184,7 @@ class Panel(cream.Module):
         self.window.connect('motion-notify-event', self.mouse_motion_cb)
         self.window.connect('enter-notify-event', self.mouse_enter_cb)
         self.window.connect('leave-notify-event', self.mouse_leave_cb)
+        self.window.connect('scroll-event', self.scroll_cb)
 
         self.item_add = gtk.ImageMenuItem(gtk.STOCK_ADD)
         self.item_add.get_children()[0].set_label('Add applet')
@@ -338,6 +339,13 @@ class Panel(cream.Module):
         if applet:
             offset_x, offset_y = applet.get_position()
             applet.emit('mouse-leave', event.x - offset_x, event.y - offset_y)
+
+
+    def scroll_cb(self, window, event):
+        applet = self.get_applet_at_coords(event.x, event.y)
+        if applet:
+           offset_x, offset_y = applet.get_position()
+           applet.emit('scroll', event.x - offset_x, event.y - offset_y, event.direction)
 
 
 
