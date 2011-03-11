@@ -79,8 +79,8 @@ class BubbleWindow(gtk.Window):
         tip_width = 10
         tip_height = 10
 
-        tip_x = left + tip_width + margin
-        tip_y = margin
+        tip_x = left + tip_width + margin + .5
+        tip_y = margin + .5
 
         width = window_width - 2*margin
         height = window_height - 2*margin - 10
