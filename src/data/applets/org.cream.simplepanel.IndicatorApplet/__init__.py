@@ -82,13 +82,15 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
     def get_entry_at_coords(self, x, y):
 
-        position = 0
+        position = PADDING
         for indicator in self.indicators:
+            if position != PADDING:
+                position += SPACING
             for entry in indicator.get_entries():
                 width = self._get_width_for_entry(entry)
                 if x >= position and x <= position + width:
                     return entry
-                position += width + PADDING
+                position += width
 
 
     def click_cb(self, applet, x, y):
