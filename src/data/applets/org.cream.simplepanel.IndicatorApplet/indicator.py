@@ -62,6 +62,10 @@ class _IndicatorObjectEntry(ctypes.Structure):
         ("menu", ctypes.c_int)]
 
 
+class IndicatorLoadingFailed(Exception):
+    message = "Failed to load Indicator."
+
+
 class IndicatorObjectEntry(object):
 
     def __init__(self, label, pixbuf, menu):
@@ -110,6 +114,10 @@ class IndicatorObject(gobject.GObject):
 
         self.address = indicator_object_new_from_file(path)
         self.indicator = capi.pygobject_new(self.address)
+        
+        if not self.indicator:
+            raise IndicatorLoadingFailed
+
 
         self.indicator.connect('entry-added', self.entry_added_cb)
         self.indicator.connect('entry-removed', self.entry_removed_cb)

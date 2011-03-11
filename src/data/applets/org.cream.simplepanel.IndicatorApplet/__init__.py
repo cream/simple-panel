@@ -5,7 +5,7 @@ import cairo
 
 import simplepanel.applet
 
-from indicator import IndicatorObject
+from indicator import IndicatorObject, IndicatorLoadingFailed
 
 
 FONT = ('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
@@ -42,13 +42,16 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
         for indicator_name in INDICATORS:
             path = '/usr/lib/indicators/4/lib{name}.so'.format(name=indicator_name)
-            indicator = IndicatorObject(path)
+            
+            try:
+                indicator = IndicatorObject(path)
 
-            if indicator:
                 indicator.connect('entry-added', lambda *x: self.draw())
                 indicator.connect('entry-removed', lambda *x: self.draw())
 
                 self.indicators.append(indicator)
+            except IndicatorLoadingFailed:
+                pass
 
 
     def get_entry_at_coords(self, x, y):
