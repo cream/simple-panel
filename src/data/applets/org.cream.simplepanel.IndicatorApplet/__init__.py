@@ -44,10 +44,11 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
             path = '/usr/lib/indicators/4/lib{name}.so'.format(name=indicator_name)
             indicator = IndicatorObject(path)
 
-            indicator.connect('entry-added', lambda *x: self.draw())
-            indicator.connect('entry-removed', lambda *x: self.draw())
+            if indicator:
+                indicator.connect('entry-added', lambda *x: self.draw())
+                indicator.connect('entry-removed', lambda *x: self.draw())
 
-            self.indicators.append(indicator)
+                self.indicators.append(indicator)
 
 
     def get_entry_at_coords(self, x, y):
