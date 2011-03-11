@@ -54,14 +54,27 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
             except IndicatorLoadingFailed:
                 pass
             
+        for indicator in self.indicators:
+            for entry in indicator.get_entries():
+                entry.connect('update', lambda *args: self.update())
+        
+
+    def update(self):
+        self.allocate(self.get_allocation()[1])
+        self.draw()
+            
             
     def entry_added_cb(self, indicator, entry):
+        
+        entry.connect('update', lambda *args: self.update())
         
         self.allocate(self.get_allocation()[1])
         self.draw()
             
             
     def entry_removed_cb(self, indicator, entry):
+        
+        entry.connect('update', lambda *args: self.update())
         
         self.allocate(self.get_allocation()[1])
         self.draw()

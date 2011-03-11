@@ -66,41 +66,51 @@ class IndicatorLoadingFailed(Exception):
     message = "Failed to load Indicator."
 
 
-class IndicatorObjectEntry(object):
+class IndicatorObjectEntry(gobject.GObject):
 
-    def __init__(self, label, pixbuf, menu):
+    __gsignals__ = {
+        'update': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        }
 
-        self.label = label
-        self.pixbuf = pixbuf
-        self.menu = menu
+    def __init__(self, addr):
+        
+        gobject.GObject.__init__(self)
 
+        self._entry = _IndicatorObjectEntry.from_address(addr)
 
-    @classmethod
-    def from_address(cls, addr):
-
-        _entry = _IndicatorObjectEntry.from_address(addr)
-
-        if _entry.label:
-            label = capi.pygobject_new(_entry.label).get_label()
+        if self._entry.label:
+            self._label = capi.pygobject_new(self._entry.label)
+            self._label.connect('notify', self.notify_cb)
+            self.label = self._label.get_label()
         else:
-            label = None
+            self._label = None
+            self.label = None
 
-        if _entry.image:
-            pixbuf = capi.pygobject_new(_entry.image).get_pixbuf()
+        if self._entry.image:
+            self._image = capi.pygobject_new(self._entry.image)
+            self._image.connect('notify', self.notify_cb)
+            self.pixbuf = self._image.get_pixbuf()
         else:
-            pixbuf = None
+            self._image = None
+            self.pixbuf = None
 
-        if _entry.menu:
-            menu = capi.pygobject_new(_entry.menu)
+        if self._entry.menu:
+            self.menu = capi.pygobject_new(self._entry.menu)
         else:
-            menu = None
-
-        return cls(label, pixbuf, menu)
+            self.menu = None
+    
+    def notify_cb(self, source, prop):
+        
+        if source == self._image:
+            self.pixbuf = self._image.get_pixbuf()
+        elif source == self._label:
+            self.label = self._label.get_label()
+        
+        self.emit('update')
 
 
 class IndicatorObject(gobject.GObject):
 
-    #__gtype_name__ = 'IndicatorObject'
     __gsignals__ = {
         'entry-added': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
         'entry-removed': (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
@@ -126,7 +136,7 @@ class IndicatorObject(gobject.GObject):
 
         _entries = glist(indicator_object_get_entries(self.address))
         for _entry in _entries:
-            self.entries[_entry] = IndicatorObjectEntry.from_address(_entry)
+            self.entries[_entry] = IndicatorObjectEntry(_entry)
 
 
     def get_entries(self):
@@ -136,7 +146,7 @@ class IndicatorObject(gobject.GObject):
     def entry_added_cb(self, indicator, _entry):
 
         addr = int(str(_entry)[13:-1],16)
-        entry = IndicatorObjectEntry.from_address(addr)
+        entry = IndicatorObjectEntry(addr)
         self.entries[addr] = entry
 
         self.emit('entry-added', entry)
@@ -145,11 +155,12 @@ class IndicatorObject(gobject.GObject):
     def entry_removed_cb(self, indicator, _entry):
 
         addr = int(str(_entry)[13:-1],16)
-        entry = IndicatorObjectEntry.from_address(addr)
-
+        
+        entry = self.entries[addr]
         del self.entries[addr]
 
         self.emit('entry-removed', entry)
 
 
+gobject.type_register(IndicatorObjectEntry)
 gobject.type_register(IndicatorObject)
