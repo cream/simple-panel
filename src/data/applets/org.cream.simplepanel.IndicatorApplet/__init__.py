@@ -12,6 +12,7 @@ FONT = ('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
 FONT_SIZE = 14
 COLOR = (.1, .1, .1, 1)
 PADDING = 5
+SPACING = 3
 
 
 INDICATORS = [
@@ -46,12 +47,24 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
             try:
                 indicator = IndicatorObject(path)
 
-                indicator.connect('entry-added', lambda *x: self.draw())
-                indicator.connect('entry-removed', lambda *x: self.draw())
+                indicator.connect('entry-added', self.entry_added_cb)
+                indicator.connect('entry-removed', self.entry_removed_cb)
 
                 self.indicators.append(indicator)
             except IndicatorLoadingFailed:
                 pass
+            
+            
+    def entry_added_cb(self, indicator, entry):
+        
+        self.allocate(self.get_allocation()[1])
+        self.draw()
+            
+            
+    def entry_removed_cb(self, indicator, entry):
+        
+        self.allocate(self.get_allocation()[1])
+        self.draw()
 
 
     def get_entry_at_coords(self, x, y):
@@ -92,23 +105,25 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
     def render(self, ctx):
 
-        total_width = 0
-        for indicator in self.indicators:
-            total_width += self._get_width_for_indicator(indicator) + PADDING
-
-        position = 0
+        position = PADDING
 
         for indicator in self.indicators:
             for entry in indicator.get_entries():
                 if entry.pixbuf:
+                    if position != PADDING:
+                        position += SPACING
+                    
                     icon_surface, width, height = self._pixbuf_to_surface(entry.pixbuf)
                     ctx.set_source_surface(icon_surface,
                                            position,
                                            (self.get_allocation()[1] - height) / 2)
                     ctx.paint()
 
-                    position += width + PADDING
+                    position += width
                 if entry.label:
+                    if position != PADDING:
+                        position += SPACING
+                    
                     ctx.set_operator(cairo.OPERATOR_OVER)
                     ctx.set_source_rgba(*COLOR)
                     ctx.select_font_face(*FONT)
@@ -119,7 +134,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
                     ctx.show_text(entry.label)
                     ctx.stroke()
 
-                    position += width + x_bearing + PADDING
+                    position += width + x_bearing
 
 
     def allocate(self, height):
@@ -127,9 +142,11 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
         width = PADDING
 
         for indicator in self.indicators:
-            width += self._get_width_for_indicator(indicator) + PADDING
-
-        width += 3*PADDING
+            if width != PADDING:
+                width += SPACING
+            width += self._get_width_for_indicator(indicator)
+        
+        width +=PADDING
 
         self.set_allocation(width, height)
 
@@ -155,6 +172,8 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
         width = 0
         for entry in indicator.get_entries():
+            if width != 0:
+                width += SPACING
             width += self._get_width_for_entry(entry)
 
         return width
@@ -164,8 +183,12 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
         width = 0
         if entry.pixbuf:
+            if width != 0:
+                width += SPACING
             width += entry.pixbuf.get_width()
         if entry.label:
+            if width != 0:
+                width += SPACING
             surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 100, 100)
             ctx = cairo.Context(surface)
             ctx.select_font_face(*FONT)
