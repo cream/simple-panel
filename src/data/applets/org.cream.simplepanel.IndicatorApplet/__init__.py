@@ -43,7 +43,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
         for indicator_name in INDICATORS:
             path = '/usr/lib/indicators/4/lib{name}.so'.format(name=indicator_name)
-            
+
             try:
                 indicator = IndicatorObject(path)
 
@@ -53,29 +53,29 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
                 self.indicators.append(indicator)
             except IndicatorLoadingFailed:
                 pass
-            
+
         for indicator in self.indicators:
             for entry in indicator.get_entries():
                 entry.connect('update', lambda *args: self.update())
-        
+
 
     def update(self):
         self.allocate(self.get_allocation()[1])
         self.draw()
-            
-            
+
+
     def entry_added_cb(self, indicator, entry):
-        
+
         entry.connect('update', lambda *args: self.update())
-        
+
         self.allocate(self.get_allocation()[1])
         self.draw()
-            
-            
+
+
     def entry_removed_cb(self, indicator, entry):
-        
+
         entry.connect('update', lambda *args: self.update())
-        
+
         self.allocate(self.get_allocation()[1])
         self.draw()
 
@@ -127,7 +127,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
                 if entry.pixbuf:
                     if position != PADDING:
                         position += SPACING
-                    
+
                     icon_surface, width, height = self._pixbuf_to_surface(entry.pixbuf)
                     ctx.set_source_surface(icon_surface,
                                            position,
@@ -138,7 +138,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
                 if entry.label:
                     if position != PADDING:
                         position += SPACING
-                    
+
                     ctx.set_operator(cairo.OPERATOR_OVER)
                     ctx.set_source_rgba(*COLOR)
                     ctx.select_font_face(*FONT)
@@ -160,7 +160,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
             if width != PADDING:
                 width += SPACING
             width += self._get_width_for_indicator(indicator)
-        
+
         width +=PADDING
 
         self.set_allocation(width, height)
