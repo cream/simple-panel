@@ -88,9 +88,10 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
                 position += SPACING
             for entry in indicator.get_entries():
                 width = self._get_width_for_entry(entry)
-                if x >= position and x <= position + width:
-                    return entry
+                if x >= position and x <= position + width + PADDING:
+                    return entry, position
                 position += width
+        return None, None
 
 
     def click_cb(self, applet, x, y):
@@ -98,39 +99,18 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
         if self.active_menu:
             self.active_menu.hide()
 
-        entry = self.get_entry_at_coords(x, y)
+        entry, position = self.get_entry_at_coords(x, y)
         if entry:
             menu = entry.menu
             if menu == self.active_menu:
                 self.active_menu = None
                 return
 
-            width = menu.get_allocation()[2]
-            x, y = menu.get_parent().get_position()
-            if x > 0 and y > 0:
-                menu.popup(None, None, self.get_menu_position, 1, 0, (x, y, width))
-            else:
-                # the first time the menu has no width and coordinates, so show it first
-                # and move it to the right position
-                menu.popup(None, None, None, 1, 0)
-                win = menu.get_parent()
-                x, y = win.get_position()
-                width= win.get_allocation()[2]
-                x, y, _ = self.get_menu_position(menu, (x, y, width))
+            x, y = position + self.get_position()[0] + SPACING , self.get_allocation()[1]
 
-                win.move(x, y)
+            menu.popup(None, None, lambda *_: (int(x), int(y), True), 1, 0,)
 
             self.active_menu = menu
-
-
-    def get_menu_position(self, menu, data):
-
-        x, y, width = data
-        x = x + width
-        if x + width > self.screen_width:
-            x -= (x + width) - self.screen_width
-        return x, self.get_allocation()[1], True
-
 
 
     def render(self, ctx):
@@ -176,7 +156,7 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
                 width += SPACING
             width += self._get_width_for_indicator(indicator)
 
-        width +=PADDING
+        width += PADDING
 
         self.set_allocation(width, height)
 
