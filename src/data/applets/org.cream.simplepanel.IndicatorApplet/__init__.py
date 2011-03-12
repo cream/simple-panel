@@ -105,17 +105,32 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
                 self.active_menu = None
                 return
 
-            menu.popup(None, None, None, 1, 0)
-            win = menu.get_parent()
-            x, y = win.get_position()
+            width = menu.get_allocation()[2]
+            x, y = menu.get_parent().get_position()
+            if x > 0 and y > 0:
+                menu.popup(None, None, self.get_menu_position, 1, 0, (x, y, width))
+            else:
+                # the first time the menu has no width and coordinates, so show it first
+                # and move it to the right position
+                menu.popup(None, None, None, 1, 0)
+                win = menu.get_parent()
+                x, y = win.get_position()
+                width= win.get_allocation()[2]
+                x, y, _ = self.get_menu_position(menu, (x, y, width))
 
-            width= win.get_allocation()[2]
-            x = x + width
-            if x +width > self.screen_width:
-                x -= (x + width) - self.screen_width
-            win.move(x, self.get_allocation()[1] + 1)
+                win.move(x, y)
 
             self.active_menu = menu
+
+
+    def get_menu_position(self, menu, data):
+
+        x, y, width = data
+        x = x + width
+        if x + width > self.screen_width:
+            x -= (x + width) - self.screen_width
+        return x, self.get_allocation()[1], True
+
 
 
     def render(self, ctx):
