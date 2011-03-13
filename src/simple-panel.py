@@ -67,10 +67,11 @@ def copy_layout(layout):
 
 class PanelWindow(gtk.Window):
 
-    def __init__(self):
+    def __init__(self, path):
 
         gtk.Window.__init__(self)
 
+        self.path = path
         self._alpha = (.5, 1)
 
         # Setting up the Widget's window...
@@ -86,19 +87,28 @@ class PanelWindow(gtk.Window):
 
         self.display = self.get_display()
         self.screen = self.display.get_default_screen()
+        self.screen.connect('size-changed', self.screen_size_changed_cb)
 
         self.set_size_request(self.screen.get_width(), 40)
 
         self.connect('expose-event', self.expose_cb)
         self.connect('realize', self.realize_cb)
+        self.connect('size-allocate', self.size_allocate_cb)
 
+        width, height = self.get_size()
+        
+        self.draw_background()
+        
+        
+    def draw_background(self):
+        
         width, height = self.get_size()
 
         # Draw the background…
         self.background_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         background_ctx = cairo.Context(self.background_surface)
 
-        background = cream.gui.svg.Handle('data/themes/default/background.svg')
+        background = cream.gui.svg.Handle(os.path.join(self.path, 'data/themes/default/background.svg'))
         background.dom.getElementById('stretch').setAttribute('width', str(width))
         background.dom.getElementById('stretch').setAttribute('height', str(24))
         background.save_dom()
@@ -108,7 +118,7 @@ class PanelWindow(gtk.Window):
         self.shadow_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         shadow_ctx = cairo.Context(self.shadow_surface)
         shadow_ctx.translate(0, 23)
-        shadow = cream.gui.svg.Handle('data/themes/default/shadow.svg')
+        shadow = cream.gui.svg.Handle(os.path.join(self.path, 'data/themes/default/shadow.svg'))
         shadow.dom.getElementById('shadow').setAttribute('width', str(width))
         shadow.save_dom()
         shadow.render_cairo(shadow_ctx)
@@ -117,7 +127,7 @@ class PanelWindow(gtk.Window):
         self.border_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         border_ctx = cairo.Context(self.border_surface)
         border_ctx.translate(0, 23)
-        border = cream.gui.svg.Handle('data/themes/default/border.svg')
+        border = cream.gui.svg.Handle(os.path.join(self.path, 'data/themes/default/border.svg'))
         border.dom.getElementById('border').setAttribute('width', str(width))
         border.save_dom()
         border.render_cairo(border_ctx)
@@ -156,6 +166,17 @@ class PanelWindow(gtk.Window):
 
         ctx.set_source_surface(self.border_surface)
         ctx.paint_with_alpha(100)
+        
+        
+    def screen_size_changed_cb(self, screen):
+        
+        self.set_size_request(self.screen.get_width(), 40)
+        self.resize(self.screen.get_width(), 40)
+        
+        
+    def size_allocate_cb(self, window, allocation):
+        
+        self.draw_background()
 
 
 class Panel(cream.Module):
@@ -176,7 +197,7 @@ class Panel(cream.Module):
         self.screen = wnck.screen_get_default()
         self.screen.connect('viewports-changed', self.viewports_changed_cb)
 
-        self.window = PanelWindow()
+        self.window = PanelWindow(self.context.get_path())
         self.window.show_all()
 
         self.window.connect('expose-event', self.expose_cb)
@@ -185,6 +206,7 @@ class Panel(cream.Module):
         self.window.connect('enter-notify-event', self.mouse_enter_cb)
         self.window.connect('leave-notify-event', self.mouse_leave_cb)
         self.window.connect('scroll-event', self.scroll_cb)
+        self.window.connect('size-allocate', lambda *args: self.relayout())
 
         self.item_add = gtk.ImageMenuItem(gtk.STOCK_ADD)
         self.item_add.get_children()[0].set_label('Add applet')
@@ -222,7 +244,7 @@ class Panel(cream.Module):
                     applet.allocate(24)
 
                     applet.connect('render-request', self.render_request_cb)
-                    applet.connect('allocation-changed', self.allocation_changed_cb)
+                    applet.connect('allocation-changed', lambda *args: self.relayout())
 
         self.relayout()
 
@@ -419,10 +441,6 @@ class Panel(cream.Module):
         #ctx.rectangle(0, 0, width, height)
         #ctx.clip()
         #applet.render(ctx)
-
-
-    def allocation_changed_cb(self, applet, allocation):
-        self.relayout()
 
 
 
