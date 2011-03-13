@@ -1,4 +1,5 @@
 import re
+import time
 import gobject
 import gtk
 import cairo
@@ -24,7 +25,6 @@ INDICATORS = [
     'datetime',
     'session'
 ]
-
 
 
 @simplepanel.applet.register
@@ -95,22 +95,24 @@ class ApplicationIndicatorApplet(simplepanel.applet.Applet):
 
 
     def click_cb(self, applet, x, y):
+        
+        entry, position = self.get_entry_at_coords(x, y)
 
         if self.active_menu:
-            self.active_menu.hide()
-
-        entry, position = self.get_entry_at_coords(x, y)
-        if entry:
-            menu = entry.menu
-            if menu == self.active_menu:
-                self.active_menu = None
+            if self.active_menu[0] == entry.menu and time.time() - self.active_menu[1] <= .1:
                 return
 
+        if entry:
+            menu = entry.menu
+            
             x, y = position + self.get_position()[0] + SPACING , self.get_allocation()[1]
 
             menu.popup(None, None, lambda *_: (int(x), int(y), True), 1, 0,)
+            def visibility_changed_cb(menu):
+                self.active_menu = (menu, time.time())
+            menu.connect('deactivate', visibility_changed_cb)
 
-            self.active_menu = menu
+            self.active_menu = (menu, True)
 
 
     def render(self, ctx):
