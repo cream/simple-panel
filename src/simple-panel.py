@@ -216,7 +216,7 @@ class Panel(cream.Module):
         self.menu.append(self.item_add)
         self.menu.show_all()
 
-        applets = sorted(self.applets.by_id.itervalues(),key=itemgetter('name'))
+        applets = sorted(self.applets.get(),key=itemgetter('name'))
         self.add_dialog = AddAppletDialog(applets)
 
 
@@ -251,7 +251,7 @@ class Panel(cream.Module):
 
     def load_applet(self, applet_id):
 
-        path = self.applets.get_by_id(applet_id)['path']
+        path = list(self.applets.get(id=applet_id))[0]['path']
 
         applet_file = os.path.join(path, '__init__.py')
         applet_name = applet_id.split('.')[-1]
